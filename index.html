@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TextPro UA — AI-генератор продаючих текстів</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#0057FF;--blue-dark:#003FCC;--blue-light:#EEF3FF;--bg:#F7F8FC;--white:#fff;--border:#E2E6F0;--text:#111827;--muted:#6B7280;--green:#059669;--red:#DC2626;--r:12px;--rs:8px}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+    .logo{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:8px}
+    .logo span{background:var(--blue);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px}
+    .nav-btn{padding:7px 16px;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text);text-decoration:none;transition:opacity .15s}
+    .nav-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .hero{text-align:center;padding:5rem 1.5rem 3rem;max-width:700px;margin:0 auto}
+    .badge{display:inline-block;background:var(--blue-light);color:var(--blue);font-size:13px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem}
+    h1{font-family:'Unbounded',sans-serif;font-size:clamp(26px,5vw,44px);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+    h1 em{color:var(--blue);font-style:normal}
+    .hero p{font-size:17px;color:var(--muted);line-height:1.65;margin-bottom:2rem}
+    .stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+    .stat strong{display:block;font-size:22px;font-weight:700}
+    .stat span{font-size:13px;color:var(--muted)}
+    .wrap{max-width:900px;margin:0 auto 4rem;padding:0 1.5rem}
+    .tabs{display:flex;gap:4px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:5px;margin-bottom:1.5rem}
+    .tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;border:none;background:transparent;cursor:pointer;border-radius:var(--rs);color:var(--muted);transition:all .15s}
+    .tab.active{background:var(--blue);color:#fff}
+    .panel{display:none}.panel.active{display:block}
+    .card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:6px}
+    select,input,textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+    select:focus,input:focus,textarea:focus{border-color:var(--blue)}
+    textarea{resize:vertical;min-height:80px}
+    .tbar{display:flex;align-items:center;justify-content:space-between;background:var(--blue-light);border:1px solid #C7D8FF;border-radius:var(--rs);padding:10px 16px;margin-bottom:1.25rem;font-size:14px}
+    .tbar strong{color:var(--blue)}.tbar a{color:var(--blue);cursor:pointer;font-weight:600}
+    .btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font-size:16px;font-weight:600;cursor:pointer;margin-top:1.25rem;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn:hover{background:var(--blue-dark)}.btn:disabled{opacity:.5;cursor:default}
+    .result{margin-top:1.5rem;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:none}
+    .result.show{display:block}
+    .rhead{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+    .rhead span{font-size:13px;font-weight:500;color:var(--muted)}
+    .cbtn{font-size:13px;padding:5px 12px;border:1px solid var(--border);background:#fff;border-radius:var(--rs);cursor:pointer;color:var(--text);font-weight:500}
+    .rtext{padding:1.25rem 1.5rem;font-size:15px;line-height:1.75;white-space:pre-wrap}
+    .err{background:#FEF2F2;border:1px solid #FECACA;color:var(--red);border-radius:var(--rs);padding:10px 14px;font-size:14px;margin-top:1rem;display:none}
+    .err.show{display:block}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .plan{border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;background:var(--white);position:relative}
+    .plan.pop{border:2px solid var(--blue)}
+    .ptag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:11px;font-weight:600;padding:3px 12px;border-radius:20px;white-space:nowrap}
+    .pname{font-size:15px;font-weight:600;margin-bottom:4px}
+    .pprice{font-family:'Unbounded',sans-serif;font-size:28px;font-weight:700;color:var(--blue);margin-bottom:2px}
+    .pper{font-size:12px;color:var(--muted);margin-bottom:1rem}
+    .pf{font-size:13px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    .ok{color:var(--green);font-weight:700}.no{color:#D1D5DB;font-weight:700}
+    .pcta{width:100%;margin-top:1.25rem;padding:10px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text);transition:all .15s}
+    .pcta.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none}
+    .spin.show{display:block}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    @media(max-width:600px){.grid{grid-template-columns:1fr}.plans{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="logo">TextPro <span>UA</span></div>
+  <div style="display:flex;gap:8px">
+    <a class="nav-btn" href="#plans">Тарифи</a>
+    <a class="nav-btn primary" href="#app">Спробувати</a>
+  </div>
+</nav>
+<section class="hero">
+  <div class="badge">⚡ AI-копірайтер для вашого бізнесу</div>
+  <h1>Продаючі тексти<br/>за <em>10 секунд</em></h1>
+  <p>Генеруй пости для Instagram, описи для Rozetka, оголошення для OLX та тексти для сайту. Без копірайтера, без чекання.</p>
+  <div class="stats">
+    <div class="stat"><strong>2 млн+</strong><span>малих бізнесів в Україні</span></div>
+    <div class="stat"><strong>10 сек</strong><span>на генерацію тексту</span></div>
+    <div class="stat"><strong>6 типів</strong><span>продаючих текстів</span></div>
+  </div>
+</section>
+<div class="wrap" id="app">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('gen')">✍️ Генератор</button>
+    <button class="tab" onclick="switchTab('plans')">💎 Тарифи</button>
+  </div>
+  <div class="panel active" id="panel-gen">
+    <div class="card">
+      <div class="tbar">
+        <div>Безплатних генерацій: <strong id="tok">3 / 3</strong></div>
+        <a onclick="switchTab('plans')">Отримати безліміт →</a>
+      </div>
+      <div class="grid">
+        <div style="grid-column:1/-1">
+          <label>Тип тексту</label>
+          <select id="type">
+            <option>Instagram / TikTok пост</option>
+            <option>Опис товару для Rozetka або Prom.ua</option>
+            <option>Оголошення для OLX</option>
+            <option>Текст для landing page сайту</option>
+            <option>Email-розсилку</option>
+            <option>Instagram Stories з закликом до дії</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;margin-top:1rem">
+          <label>Ваш товар або послуга</label>
+          <input type="text" id="product" placeholder="Наприклад: кросівки Nike, торти на замовлення, ремонт iPhone..."/>
+        </div>
+        <div style="margin-top:1rem">
+          <label>Тон</label>
+          <select id="tone">
+            <option>продаючий і переконливий</option>
+            <option>дружній і теплий</option>
+            <option>емоційний</option>
+            <option>лаконічний і чіткий</option>
+            <option>офіційний</option>
+          </select>
+        </div>
+        <div style="margin-top:1rem">
+          <label>Аудиторія</label>
+          <select id="audience">
+            <option>загальна аудиторія</option>
+            <option>молодь 18–25 років</option>
+            <option>жінки 25–40 років</option>
+            <option>підприємці та бізнес</option>
+            <option>молоді мами</option>
+            <option>чоловіки 30–45 років</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;margin-top:1rem">
+          <label>Ключові переваги (необов'язково)</label>
+          <textarea id="benefits" placeholder="Швидка доставка, гарантія 1 рік, ручна робота..."></textarea>
+        </div>
+      </div>
+      <button class="btn" id="genbtn" onclick="generate()">
+        <span id="btntxt">✨ Згенерувати текст</span>
+        <div class="spin" id="spin"></div>
+      </button>
+      <div class="err" id="err"></div>
+      <div class="result" id="result">
+        <div class="rhead">
+          <span id="rlabel">Результат</span>
+          <button class="cbtn" onclick="copyText()">📋 Копіювати</button>
+        </div>
+        <div class="rtext" id="rtext"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="panel-plans">
+    <div class="plans">
+      <div class="plan">
+        <div class="pname">Безплатно</div>
+        <div class="pprice">0₴</div>
+        <div class="pper">назавжди</div>
+        <div class="pf"><span class="ok">✓</span> 3 генерації на день</div>
+        <div class="pf"><span class="ok">✓</span> Усі типи текстів</div>
+        <div class="pf"><span class="no">✗</span> Збереження історії</div>
+        <button class="pcta" disabled>Поточний план</button>
+      </div>
+      <div class="plan pop">
+        <div class="ptag">🔥 Найпопулярніший</div>
+        <div class="pname">Pro</div>
+        <div class="pprice">299₴</div>
+        <div class="pper">на місяць</div>
+        <div class="pf"><span class="ok">✓</span> Безліміт генерацій</div>
+        <div class="pf"><span class="ok">✓</span> Усі типи текстів</div>
+        <div class="pf"><span class="ok">✓</span> Збереження історії</div>
+        <div class="pf"><span class="ok">✓</span> Пріоритетна швидкість</div>
+        <button class="pcta primary">Підключити Pro — 299₴/міс</button>
+      </div>
+      <div class="plan">
+        <div class="pname">Business</div>
+        <div class="pprice">799₴</div>
+        <div class="pper">на місяць</div>
+        <div class="pf"><span class="ok">✓</span> Усе з Pro</div>
+        <div class="pf"><span class="ok">✓</span> 3 акаунти</div>
+        <div class="pf"><span class="ok">✓</span> API-доступ</div>
+        <div class="pf"><span class="ok">✓</span> Власний тон бренду</div>
+        <button class="pcta">Підключити</button>
+      </div>
+    </div>
+  </div>
+</div>
+<footer style="text-align:center;padding:2rem;font-size:13px;color:var(--muted);border-top:1px solid var(--border)">
+  © 2025 TextPro UA · AI-генератор продаючих текстів
+</footer>
+<script>
+let tokens=3;
+function switchTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['gen','plans'][i]===n));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');
+}
+async function generate(){
+  const product=document.getElementById('product').value.trim();
+  if(!product)return showErr('Введіть назву товару або послуги');
+  if(tokens<=0){showErr('Ліміт вичерпано — підключіть Pro');switchTab('plans');return;}
+  const type=document.getElementById('type').value;
+  const tone=document.getElementById('tone').value;
+  const audience=document.getElementById('audience').value;
+  const benefits=document.getElementById('benefits').value.trim();
+  setLoad(true);hideErr();
+  document.getElementById('result').classList.remove('show');
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({product,type,tone,audience,benefits})
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Помилка сервера');
+    tokens--;
+    document.getElementById('tok').textContent=tokens+' / 3';
+    document.getElementById('rlabel').textContent=type+' · '+product;
+    document.getElementById('rtext').textContent=data.text;
+    document.getElementById('result').classList.add('show');
+  }catch(e){showErr(e.message);}
+  setLoad(false);
+}
+function setLoad(on){
+  document.getElementById('genbtn').disabled=on;
+  document.getElementById('btntxt').style.display=on?'none':'';
+  document.getElementById('spin').classList.toggle('show',on);
+}
+function showErr(msg){const e=document.getElementById('err');e.textContent=msg;e.classList.add('show');}
+function hideErr(){document.getElementById('err').classList.remove('show');}
+function copyText(){
+  navigator.clipboard.writeText(document.getElementById('rtext').textContent);
+  const b=document.querySelector('.cbtn');b.textContent='✅ Скопійовано';
+  setTimeout(()=>b.textContent='📋 Копіювати',2000);
+}
+</script>
+</body>
+</html>
